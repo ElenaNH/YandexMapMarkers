@@ -1,3 +1,4 @@
 <resources>
-    <string name="app_name">YandexMapMarkers</string>
+    <string name="app_name" translatable="false">YandexMapMarkers</string>
+    <string name="goToMap">Map</string>
 </resources>

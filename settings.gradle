@@ -1,12 +1,13 @@
 pluginManagement {
     repositories {
-        google {
+        /*google {
             content {
                 includeGroupByRegex("com\\.android.*")
                 includeGroupByRegex("com\\.google.*")
                 includeGroupByRegex("androidx.*")
             }
-        }
+        }*/
+        google()
         mavenCentral()
         gradlePluginPortal()
     }
@@ -16,7 +17,13 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+
+        /*maven {
+            url "http://maven.google.com/"  // Здесь требуется для Яндекс-карт
+        }*/
+
     }
+
 }
 
 rootProject.name = "YandexMapMarkers"
