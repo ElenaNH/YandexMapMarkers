@@ -2,19 +2,29 @@ package ru.netology.yandexmapmarkers
 
 import android.os.Bundle
 import android.util.Log
-import android.widget.TextClock
-import androidx.activity.enableEdgeToEdge
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import com.yandex.mapkit.MapKitFactory
+import com.yandex.mapkit.geometry.Point
+import com.yandex.mapkit.map.CameraPosition
+import com.yandex.mapkit.map.MapObjectTapListener
 import com.yandex.mapkit.mapview.MapView
-import ru.netology.yandexmapmarkers.dto.GeoPoint
-import ru.netology.yandexmapmarkers.dto.Marker
+import com.yandex.runtime.image.ImageProvider
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var mapView: MapView // Для яндекс-карт
+    //private lateinit var mapView: MapView // Для яндекс-карт
+    private val mapView by lazy { findViewById<MapView>(R.id.mapview) } // Для яндекс-карт
+
+    // Слушатель нажатия на указанную метку
+    private val placemarkTapListener = MapObjectTapListener { _, point ->
+        Toast.makeText(
+            this@MainActivity,
+            "Tapped the point (${point.longitude}, ${point.latitude})",
+            Toast.LENGTH_SHORT
+        ).show()
+        true
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -22,60 +32,43 @@ class MainActivity : AppCompatActivity() {
         MapKitFactory.setApiKey(BuildConfig.MAPKIT_API_KEY) // Можно (но плохо!) прописать конкретный ключ в виде строки
         MapKitFactory.initialize(this) //Инициализация библиотеки
 
-
-        enableEdgeToEdge()
+        // Карта появляется тут (она встроена в activity_main)
         setContentView(R.layout.activity_main)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
+
+        //mapView = findViewById(R.id.mapview)  // Если бы было lateinit, то так рассчитываем
+
+        // Тут мы можем что-то сделать с этой картой
+        // (если by lazy, то прежде выполнится лямбда для расчета mapView)
+        mapView?.also {
+            Log.d("mapView " + it.tag.toString(), it.toString() )
+
+            //it.map.move(
+            it.mapWindow.map.move(
+                CameraPosition(
+                    Point(55.751225, 37.629540),
+                    /* zoom = */ 17.0f,
+                    /* azimuth = */ 150.0f,
+                    /* tilt = */ 30.0f
+                )
+            )
+
         }
 
-        try {
-            Log.d("TRY", "Before find")
-            val clock = findViewById<TextClock>(R.id.clock)
-            clock?.let {
-                Log.d("Prop", "timeZone=" + it.timeZone.toString())
-                Log.d("Prop", "format12Hour=" + it.format12Hour.toString())
-                Log.d("Prop", "format24Hour=" + it.format24Hour.toString())
-                Log.d("Prop", "textSize=" + it.textSize.toString())
-                //it.refreshTime()
-                //Программно узнать текущую дату/время, отображаемые на компоненте,
-                // можно через свойство textClock.text
-                //It is possible to determine whether the system is currently
-                // in 24-hour mode by calling is24HourModeEnabled().
-
-            }
-        } catch (e: Error) {
-            Log.e("CATCH", "Cannot find clock props: " + e.toString())
+        // Добавление метки с нужной иконкой imageProvider
+        val imageProvider = ImageProvider.fromResource(this, R.drawable.ic_baseline_maps_ugc_24)
+        //val placemark = mapView.map.mapObjects.addPlacemark().apply {
+        val placemark = mapView.mapWindow.map.mapObjects.addPlacemark().apply {
+            geometry = Point(59.935493, 30.327392)
+            setIcon(imageProvider)
         }
 
-//////////////////////////////////////////////////
+        // Добавление определенного выше слушателя (теперь он начнет слушать)
+        placemark.addTapListener(placemarkTapListener)
 
-        val target = Marker(geoPoint = GeoPoint(57.02, 78.33))
-
-//////////////////////////////////////////////////
-        var stepNumber = 0
-        try {
-            // Яндекс-карты
-            stepNumber++
-            /*            MapKitFactory.setApiKey(BuildConfig.MAPKIT_API_KEY) // Можно (но плохо!) прописать конкретный ключ в виде строки
-                        stepNumber++
-                        MapKitFactory.initialize(this) //Инициализация библиотеки*/
-            stepNumber++
-//            setContentView(R.layout.activity_main)  // TODO Выше уже было -> Попробовать закомментить!
-            stepNumber++
-            mapView = findViewById(R.id.mapview)  // Размещаем во вью, доступный во всей активити
-
-            /*Важно! С помощью вызова MapKitFactory.initialize(Context)
-        загружаются все необходимые для MapKit нативные библиотеки.*/
-        } catch (e: Exception) {
-            Log.e("MapKit", "Cannot run step $stepNumber")
-        }
     }
 
-    override fun onStart() {
-        /*Отправьте события onStart и onStop в MapKitFactory и MapView,
+        override fun onStart() {
+            /*Отправьте события onStart и onStop в MapKitFactory и MapView,
         переопределив методы Activity.onStart и Activity.onStop для Activity*/
         super.onStart()
         MapKitFactory.getInstance().onStart()
