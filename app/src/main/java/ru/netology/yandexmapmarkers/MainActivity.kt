@@ -29,7 +29,8 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        MapKitFactory.setApiKey(BuildConfig.MAPKIT_API_KEY) // Можно (но плохо!) прописать конкретный ключ в виде строки
+        // Вынесли в App.kt вызов MapKitFactory.setApiKey
+        //MapKitFactory.setApiKey(BuildConfig.MAPKIT_API_KEY) // Можно (но плохо!) прописать конкретный ключ в виде строки
         MapKitFactory.initialize(this) //Инициализация библиотеки
 
         // Карта появляется тут (она встроена в activity_main)
