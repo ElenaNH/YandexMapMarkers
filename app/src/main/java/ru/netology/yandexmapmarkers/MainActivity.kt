@@ -46,20 +46,30 @@ class MainActivity : AppCompatActivity() {
             //it.map.move(
             it.mapWindow.map.move(
                 CameraPosition(
-                    Point(55.751225, 37.629540),
+                    Point(55.921106, 37.716106),
                     /* zoom = */ 17.0f,
                     /* azimuth = */ 150.0f,
                     /* tilt = */ 30.0f
                 )
             )
+            /*it.mapWindow.map.move(
+                CameraPosition(
+                    Point(55.751225, 37.629540),
+                    /* zoom = */ 17.0f,
+                    /* azimuth = */ 150.0f,
+                    /* tilt = */ 30.0f
+                )
+            )*/
 
         }
 
         // Добавление метки с нужной иконкой imageProvider
-        val imageProvider = ImageProvider.fromResource(this, R.drawable.ic_baseline_maps_ugc_24)
+        //val imageProvider = ImageProvider.fromResource(this, R.drawable.ic_baseline_maps_ugc_24)
+        val imageProvider = ImageProvider.fromResource(this, R.mipmap.ic_netology_round)
         //val placemark = mapView.map.mapObjects.addPlacemark().apply {
         val placemark = mapView.mapWindow.map.mapObjects.addPlacemark().apply {
-            geometry = Point(59.935493, 30.327392)
+            //geometry = Point(59.935493, 30.327392)
+            geometry = Point(55.921106, 37.716106)
             setIcon(imageProvider)
         }
 
